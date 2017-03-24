@@ -14,7 +14,7 @@ BlogPosts.create('First day', 'This was my first day', 'Illana', Date(16, 7, 21)
 BlogPosts.create('Last day', 'Glad to be done!', 'Illana');
 
 //function for validating required fields
-const validateFields = (fields, req, res) => {
+const validateFields = (fields, req) => {
   for (let i = 0; i < fields.length; i++) {
     const field = fields[i];
     if (!(field in req.body)) {
@@ -32,16 +32,22 @@ router.get('/', (req, res) => {
   res.status(200).json(BlogPosts.get());
 });
 
+router.get('/:id', (req, res) => {
+  console.log('GET request made');
+  //return as json all of the blog posts
+  res.status(200).json(BlogPosts.get(req.params.id));
+});
+
 //post route
 router.post('/', jsonParser, (req, res) => {
   console.log('POST request made');
   const requiredFields = ['title', 'content', 'author'];
   //accept a json request
   //validate json request
-  validateFields(requiredFields, req, res);
+  validateFields(requiredFields, req);
   //create a new blog post based on json request
   //send blog that was posted
-  res.status(200).json(BlogPosts.create(req.body.title, req.body.content, req.body.author, req.body.publishDate));
+  res.status(201).json(BlogPosts.create(req.body.title, req.body.content, req.body.author, req.body.publishDate));
 });
 
 //update route
@@ -50,7 +56,7 @@ router.put('/:id', jsonParser, (req, res) => {
   //validate id field
   //BlogPosts.update() will only require id field
   const requiredFields = ['id'];
-  validateFields(requiredFields, req, res);
+  validateFields(requiredFields, req);
   //validate that req.params.id and req.body.id are equal
   if (req.params.id !== req.body.id) {
     const message = 'router parameter id and request body id do not match';
@@ -66,26 +72,30 @@ router.put('/:id', jsonParser, (req, res) => {
   if (req.body.author) { newPost.author = req.body.author }
   if (req.body.publishDate) { newPost.publishDate = req.body.publishDate }
   //SOMETHING WRONG HERE!
-  // console.log(BlogPosts.update(newPost));
+  console.log(newPost);
 
-  res.status(201).send('PUT');
+  res.status(200).json(BlogPosts.update(newPost));
 });
 
 // delete route
 router.delete('/:id', (req, res) => {
   //check for post with id == req.params.id
-  const posts = BlogPosts.get();
-  const idPresent = posts.some((post) => req.params.id === post.id);
-  if (!idPresent) {
-    const message = `ID: ${req.params.id} was not found in BlogPosts`;
-    console.error(message);
-    res.status(400).send(message);
-  }
+  // const posts = BlogPosts.get(req.params.id);
+  // const idPresent = posts.some((post) => req.params.id === post.id);
+  // if (!idPresent) {
+  //   const message = `ID: ${req.params.id} was not found in BlogPosts`;
+  //   console.error(message);
+  //   res.status(400).send(message);
+  // }
   // delete post with this id
   // send status code and end
   console.log(`Post id: ${req.params.id} was deleted.`);
-  BlogPosts.delete(req.params.id);
-  res.status(204).end();
+  if (BlogPosts.delete(req.params.id) !== 'error') {
+    res.status(204).end();
+  } else {
+    res.status(400).end();
+  }
+
 });
 
 //export router for import into server.js
