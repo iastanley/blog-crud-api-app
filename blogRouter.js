@@ -71,24 +71,12 @@ router.put('/:id', jsonParser, (req, res) => {
   if (req.body.content) { newPost.content = req.body.content }
   if (req.body.author) { newPost.author = req.body.author }
   if (req.body.publishDate) { newPost.publishDate = req.body.publishDate }
-  //SOMETHING WRONG HERE!
-  console.log(newPost);
 
   res.status(200).json(BlogPosts.update(newPost));
 });
 
 // delete route
 router.delete('/:id', (req, res) => {
-  //check for post with id == req.params.id
-  // const posts = BlogPosts.get(req.params.id);
-  // const idPresent = posts.some((post) => req.params.id === post.id);
-  // if (!idPresent) {
-  //   const message = `ID: ${req.params.id} was not found in BlogPosts`;
-  //   console.error(message);
-  //   res.status(400).send(message);
-  // }
-  // delete post with this id
-  // send status code and end
   console.log(`Post id: ${req.params.id} was deleted.`);
   if (BlogPosts.delete(req.params.id) !== 'error') {
     res.status(204).end();
