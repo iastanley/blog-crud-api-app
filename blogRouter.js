@@ -83,6 +83,7 @@ router.delete('/:id', (req, res) => {
   }
   // delete post with this id
   // send status code and end
+  console.log(`Post id: ${req.params.id} was deleted.`);
   BlogPosts.delete(req.params.id);
   res.status(204).end();
 });
