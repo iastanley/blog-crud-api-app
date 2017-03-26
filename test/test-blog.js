@@ -35,18 +35,25 @@ describe('Blog API', function() {
   it('should add blog post on POST', function() {
       //create newPost object
       const newPost = {title: 'A', author: 'Illana', content: 'hello', publishDate: 'July 14'};
+      const expectedKeys = ['title', 'content', 'author', 'publishDate', 'id'];
       return chai.request(app)
         .post('/blog-posts')
         .send(newPost)
         .then(function(res) {
-          //assertions for POST
+          res.should.have.status(201);
+          res.should.be.json;
+          res.body.should.be.a('object');
+          res.body.should.include.keys(expectedKeys);
+          res.body.id.should.not.be.null;
+          //check that res.body object is deep equal to newPost with id
+          res.body.should.deep.equal(Object.assign(newPost, {id: res.body.id}));
         });
   }); //end of POST tests
 
   //test for PUT request
   it('should update post on PUT', function() {
     //create an updated data object
-    const updateData = {};
+    const updateData = {title: 'A', author: 'Illana', content: 'hello', publishDate: 'July 14'};
     return chai.request(app)
       .get('/blog-posts')
       .then(function(res) {
@@ -56,7 +63,10 @@ describe('Blog API', function() {
           .send(updateData);
       })
       .then(function(res) {
-        //assertions for PUT
+        res.should.have.status(200);
+        res.should.be.json;
+        res.body.should.be.a('object');
+        res.body.should.deep.equal(updateData);
       });
   }); //end of PUT tests
 
