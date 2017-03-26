@@ -14,7 +14,7 @@ BlogPosts.create('First day', 'This was my first day', 'Illana', Date(16, 7, 21)
 BlogPosts.create('Last day', 'Glad to be done!', 'Illana');
 
 //function for validating required fields
-const validateFields = (fields, req) => {
+const validateFields = (fields, req, res) => {
   for (let i = 0; i < fields.length; i++) {
     const field = fields[i];
     if (!(field in req.body)) {
@@ -44,10 +44,11 @@ router.post('/', jsonParser, (req, res) => {
   const requiredFields = ['title', 'content', 'author'];
   //accept a json request
   //validate json request
-  validateFields(requiredFields, req);
+  validateFields(requiredFields, req, res);
   //create a new blog post based on json request
   //send blog that was posted
-  res.status(201).json(BlogPosts.create(req.body.title, req.body.content, req.body.author, req.body.publishDate));
+  const newPost = BlogPosts.create(req.body.title, req.body.content, req.body.author, req.body.publishDate);
+  res.status(201).json(newPost);
 });
 
 //update route
@@ -56,23 +57,25 @@ router.put('/:id', jsonParser, (req, res) => {
   //validate id field
   //BlogPosts.update() will only require id field
   const requiredFields = ['id'];
-  validateFields(requiredFields, req);
+  validateFields(requiredFields, req, res);
   //validate that req.params.id and req.body.id are equal
   if (req.params.id !== req.body.id) {
     const message = 'router parameter id and request body id do not match';
     console.error(message);
     res.status(400).send(message);
-  }
-  //update post id with data from req.body
-  const newPost = {
-    id: req.params.id
-  }
-  if (req.body.title) { newPost.title = req.body.title }
-  if (req.body.content) { newPost.content = req.body.content }
-  if (req.body.author) { newPost.author = req.body.author }
-  if (req.body.publishDate) { newPost.publishDate = req.body.publishDate }
+  } else {
+    //update post id with data from req.body
+    const newPost = {
+      id: req.params.id
+    }
+    if (req.body.title) { newPost.title = req.body.title }
+    if (req.body.content) { newPost.content = req.body.content }
+    if (req.body.author) { newPost.author = req.body.author }
+    if (req.body.publishDate) { newPost.publishDate = req.body.publishDate }
 
-  res.status(200).json(BlogPosts.update(newPost));
+    res.status(200).json(BlogPosts.update(newPost));
+  }
+
 });
 
 // delete route
