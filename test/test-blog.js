@@ -72,15 +72,16 @@ describe('Blog API', function() {
 
   //test for PUT request with bad id
   //this is currently NOT WORKING
-  it('should fail on bad id to PUT', function() {
+  it('should fail on bad id to PUT', function(done) {
     //create an updated data object
-    const updateData = {id: 'AAA', title: 'A', author: 'Illana', content: 'hello', publishDate: 'July 14'};
-    return chai.request(app)
+    const badData = {id: 'AAA', title: 'A', author: 'Illana', content: 'hello', publishDate: 'July 14'};
+    chai.request(app)
       .put('/blog-posts/XXX')
-      .send(updateData)
-      .then(function(res) {
+      .send(badData)
+      .end(function(err, res) {
         res.should.have.status(400);
       });
+      done();
   });
 
   //test for DELETE request
