@@ -70,6 +70,8 @@ describe('Blog API', function() {
       });
   }); //end of PUT tests
 
+  //test for PUT request with bad id
+  //this is currently NOT WORKING
   it('should fail on bad id to PUT', function() {
     //create an updated data object
     const updateData = {id: 'AAA', title: 'A', author: 'Illana', content: 'hello', publishDate: 'July 14'};
@@ -83,7 +85,14 @@ describe('Blog API', function() {
 
   //test for DELETE request
   it('should delete post on DELETE', function() {
-
+    return chai.request(app)
+      .get('/blog-posts')
+      .then(function(res) {
+        return chai.request(app)
+          .delete(`/blog-posts/${res.body[0].id}`);
+      }).then(function(res) {
+        res.should.have.status(204);
+      });
   }); //end of DELETE tests
 
 }); //end of describe
