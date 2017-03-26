@@ -71,17 +71,28 @@ describe('Blog API', function() {
   }); //end of PUT tests
 
   //test for PUT request with bad id
-  //this is currently NOT WORKING
+  //WORKS WHEN YOU DON'T USE PROMISES
   it('should fail on bad id to PUT', function(done) {
     //create an updated data object
     const badData = {id: 'AAA', title: 'A', author: 'Illana', content: 'hello', publishDate: 'July 14'};
     chai.request(app)
       .put('/blog-posts/XXX')
       .send(badData)
-      .end(function(err, res) {
+      .end(function(res) {
         res.should.have.status(400);
       });
       done();
+  });
+
+  //SAME TEST DOES NOT WORK WHEN PROMISES USED
+  it('SECOND bad id on PUT', function () {
+    const badData = {id: 'AAA', title: 'A', author: 'Illana', content: 'hello', publishDate: 'July 14'};
+    return chai.request(app)
+      .put('/blog-posts/XXX')
+      .send(badData)
+      .end(function(err, res) {
+        res.should.have.status(400);
+      });
   });
 
   //test for DELETE request
